@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/static/css/cart.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-light bg-light">
+
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"> <img src="/static/img/logo.jpg" width="100" height="40" alt=""></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/index">about</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/index">services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/index">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/index">search items</a>
+          </li>
+        </ul>
+  </nav>
+  <div class="container px-4 py-5 mx-auto">
+    <div class="row d-flex justify-content-center">
+      <a href="/cart"><button class="btn btn-success ">Shop More</button></a>
+      <div class="col-12">
+        <h4 class="heading text-center">Medicine Bag</h4>
+      </div>
+      {%if rows%}
+      <table>
+        <thead>
+          <tr>
+            <th>Medicine Name</th>
+            <th>Content</th>
+            <th>Company</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[5] }}</td>
+            <td>{{ row[6] }}</td>
+            <td>
+              <form class="remove-form" data-name="{{ row[0] }}">
+                <button class="btn btn-danger remove-button" type="button">Remove</button>
+              </form>
+            </td>
+          </tr>
+          {%- endfor %}
+        </tbody>
+      </table>
+      {%endif %}
+
+      <form action="/payment" method="post">
+        <input type="hidden" name="totalAmount" id="totalAmountInput">
+        Total Amount: ₹<span id="totalAmount"></span><br>
+      
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+          $(document).ready(function() {
+            $.ajax({
+              url: '/total_amount',
+              type: 'GET',
+              dataType: 'json',
+              success: function(response) {
+                var totalAmount = response.total_amount;
+                $("#totalAmount").text(totalAmount.toFixed(2));
+                $("#totalAmountInput").val(totalAmount.toFixed(2));
+              },
+              error: function(error) {
+                console.log("Error: " + JSON.stringify(error));
+              }
+            });
+          });
+        </script>
+      
+        <button type="submit" class="btn btn-warning btn23">Proceed To Buy</button>
+      </form>
+      
+      <script>
+        // Get all remove buttons
+        const removeButtons = document.querySelectorAll('.remove-button');
+      
+        // Attach click event listener to each remove button
+        removeButtons.forEach((button) => {
+          button.addEventListener('click', (event) => {
+            const name = event.target.closest('.remove-form').dataset.name;
+      
+            // Send AJAX request to remove the item
+            fetch('/remove', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ name: name }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                // If the item was successfully removed, remove the corresponding row from the table
+                if (data.success) {
+                  event.target.closest('tr').remove();
+                  location.reload(); // Refresh the page
+                }
+              })
+              .catch((error) => {
+                console.error('Error removing item:', error);
+              });
+          });
+        });
+      </script>
+      
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: pharmacity
+spec:
+   replicas: 3
+   selector:
+     matchLabels:
+       app: pharmacity
+   template:
+     metadata:
+       labels:
+         app: pharmacity
+     spec:
+       containers:
+       - name: pharmacity
+         image: jp.icr.io/pharmacity/newpharmacity
+         imagePullPolicy: Always
+         ports: 
+         - containerPort: 5000

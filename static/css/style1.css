@@ -1,0 +1,26 @@
+.img {
+    height: 75vh;
+}
+
+.btn1 {
+    margin-left: 1rem;
+}
+
+.search {
+    margin-right: -0vh;
+
+}
+
+.btn2 {
+    margin-right: 46vh;
+}
+
+.bd{
+    width: 10vh;
+    border-radius: 20px;
+}
+
+.card{
+    border-radius: 5vh;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
